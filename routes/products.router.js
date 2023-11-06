@@ -47,14 +47,17 @@ router.post("/products/", async (req, res) => {
 
 router.put("/product/:productId", async (req, res) => {
   const { productId } = req.params;
-  const { password, Product, User_Name, State } = req.body;
+  const { password, product, user_name, state } = req.body;
 
   const good = await Products.find({ Product_Name: productId });
 
   if (good) {
     if (good.length) {
-      if (good.Password === password) {
-        await good.updateOne({});
+      if (good[0].Password === password) {
+        await good.updateOne(
+          { Product_Name: productId },
+          { $set: { Product: product, User_Name: user_name, State: state } }
+        );
       }
     } else {
       res.send({ message: "상품이 존재하지 않습니다." });
@@ -72,20 +75,17 @@ router.delete("/products/:productId", async (req, res) => {
     Product_Name: productId,
   });
 
-  res.json({ test: good.Password });
+  //res.send(String(good[0].Password));
 
-  //   if (good) {
-  //     if (good.length) {
-  //       if (good.Password === password) {
-  //         await Products.deleteOne({ Product_Name: productId });
-  //         res.send({ message: "success" });
-  //       } else {
-  //         res.send({ message: "비밀번호를 확인해주세요" });
-  //       }
-  //     } else {
-  //       res.send({ meesage: "존재하지 않습니다." });
-  //     }
-  //   }
+  if (good) {
+    console.log(good[0].Password);
+    if (String(good[0].Password == req.body.Password)) {
+      await Products.deleteOne({ Product_Name: productId });
+      res.send({ message: "success" });
+    } else {
+      res.send({ message: "비밀번호를 확인해주세요" });
+    }
+  }
 
   //   if (good) {
   //     if (good.Password === Ch_password) {
