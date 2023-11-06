@@ -48,31 +48,63 @@ router.post("/products/", async (req, res) => {
 router.put("/product/:productId", async (req, res) => {
   const { productId } = req.params;
   const { password, Product, User_Name, State } = req.body;
+
+  const good = await Products.find({ Product_Name: productId });
+
+  if (good) {
+    if (good.length) {
+      if (good.Password === password) {
+        await good.updateOne({});
+      }
+    } else {
+      res.send({ message: "상품이 존재하지 않습니다." });
+    }
+  }
 });
 
 router.delete("/products/:productId", async (req, res) => {
   const { productId } = req.params;
-  const { Ch_password } = req.body.password;
+  const { password } = req.body.Password;
 
   //   console.log(productId);
 
   const good = await Products.find({
     Product_Name: productId,
   });
-  //   //   const pass = await Products.findOne({ password: Password });
 
-  //res.json({ test: good });
+  res.json({ test: good.Password });
 
-  if (Number(Ch_password) === good) {
-    res.send({ message: "success" });
-  }
+  //   if (good) {
+  //     if (good.length) {
+  //       if (good.Password === password) {
+  //         await Products.deleteOne({ Product_Name: productId });
+  //         res.send({ message: "success" });
+  //       } else {
+  //         res.send({ message: "비밀번호를 확인해주세요" });
+  //       }
+  //     } else {
+  //       res.send({ meesage: "존재하지 않습니다." });
+  //     }
+  //   }
 
-  //   Products.findOne({ User_Name: productId }).then((good) => {
-  //     if (Number(Ch_password) === good.password) {
-  //       Products.deleteOne(good, (err) => {
-  //         if (err) return res.status(400).json({ message: err });
-  //         res.status(200).json({ message: "삭제성공" });
-  //       });
+  //   if (good) {
+  //     if (good.Password === Ch_password) {
+  //       await Products.deleteOne({ Product_Name: productId });
+  //       res.send({ message: "success" });
+  //     } else if(good.length){
+
+  //     } else {
+  //       res.send({ message: "Error" });
+  //     }
+  //   }
+
+  //   Products.findOne({ Product_Name: productId }).then((good) => {
+  //     if (good.length) {
+  //       if (req.body.Password === good.Password) {
+  //         res.send({ message: "success" });
+  //       }
+  //     } else {
+  //       res.send({ message: "상품이 없습니다." });
   //     }
   //   });
 });

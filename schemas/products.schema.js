@@ -21,7 +21,8 @@ const ProductSchema = new mongoose.Schema({
     default: "FOR_SALE",
   },
   Password: {
-    type: Number,
+    type: String,
+    require: true,
   },
 });
 
