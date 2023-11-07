@@ -45,19 +45,23 @@ router.post("/products/", async (req, res) => {
   res.json({ products: createProducts });
 });
 
-router.put("/product/:productId", async (req, res) => {
+router.put("/products/:productId", async (req, res) => {
   const { productId } = req.params;
-  const { password, product, user_name, state } = req.body;
+  const { Password, Product, User_Name, State } = req.body;
 
   const good = await Products.find({ Product_Name: productId });
 
   if (good) {
     if (good.length) {
-      if (good[0].Password === password) {
-        await good.updateOne(
+      if (Password === String(good[0].Password)) {
+        console.log("success");
+        await Products.updateOne(
           { Product_Name: productId },
-          { $set: { Product: product, User_Name: user_name, State: state } }
+          { $set: { Product: Product, User_Name: User_Name, State: State } }
         );
+        res.json({ message: "success" });
+      } else {
+        res.send({ message: "비밀번호를 확인하세요" });
       }
     } else {
       res.send({ message: "상품이 존재하지 않습니다." });
@@ -67,24 +71,22 @@ router.put("/product/:productId", async (req, res) => {
 
 router.delete("/products/:productId", async (req, res) => {
   const { productId } = req.params;
-  const { password } = req.body.Password;
+  const { password } = req.body;
+
+  const good = await Products.find({ Product_Name: productId });
 
   //   console.log(productId);
 
-  const good = await Products.find({
-    Product_Name: productId,
-  });
-
-  //res.send(String(good[0].Password));
-
-  if (good) {
-    console.log(good[0].Password);
-    if (String(good[0].Password == req.body.Password)) {
+  if (good.length) {
+    if (password === String(good[0].Password)) {
       await Products.deleteOne({ Product_Name: productId });
+      console.log("일치");
       res.send({ message: "success" });
-    } else {
+    } else if (password !== good[0].Password) {
       res.send({ message: "비밀번호를 확인해주세요" });
     }
+  } else {
+    res.send({ message: "상품이 존재하는지 확인해주세요." });
   }
 
   //   if (good) {
